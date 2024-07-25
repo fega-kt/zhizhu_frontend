@@ -1,11 +1,18 @@
+import { SafetyOutlined } from '@ant-design/icons';
 import { Alert, Button, Checkbox, Col, Divider, Form, Input, Row } from 'antd';
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AiFillGithub, AiFillGoogleCircle, AiFillWechat } from 'react-icons/ai';
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 import { DEFAULT_USER, TEST_USER } from '@/_mock/assets';
-import { SignInReq } from '@/api/services/userService';
-import { useSignIn } from '@/store/userStore';
+import { CaptchaReq, SignInReq } from '@/api/services/userService';
+import { authService } from '@/core/service/auth/auth-service';
+import { ServiceBase } from '@/core/service/servicebase';
+import { userService } from '@/core/service/user';
+import { useUserActions } from '@/store/userStore';
+import { resetAll, setPermission, setUser } from '@/store/userStoreRedux';
 import ProTag from '@/theme/antd/components/tag';
 import { useThemeToken } from '@/theme/hooks';
 
@@ -14,21 +21,57 @@ import { LoginStateEnum, useLoginStateContext } from './providers/LoginStateProv
 function LoginForm() {
   const { t } = useTranslation();
   const themeToken = useThemeToken();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [dataCaptcha, setDataCaptcha] = useState<CaptchaReq | null>();
+  const navigatge = useNavigate();
+  const { setUserToken } = useUserActions();
+
+  const { VITE_APP_HOMEPAGE: HOMEPAGE } = import.meta.env;
 
   const { loginState, setLoginState } = useLoginStateContext();
-  const signIn = useSignIn();
+  const dispatch = useDispatch();
+  const handleGetCaptcha = useCallback(async () => {
+    const res = await authService.getCaptcha({ type: 'img', width: 50, height: 50 });
+    setDataCaptcha(res);
+  }, []);
 
-  if (loginState !== LoginStateEnum.LOGIN) return null;
+  useEffect(() => {
+    handleGetCaptcha();
+  }, [handleGetCaptcha]);
 
-  const handleFinish = async ({ username, password }: SignInReq) => {
+  const handleFinish = async ({ username, password, verifyCode }: SignInReq) => {
     setLoading(true);
     try {
-      await signIn({ username, password });
+      if (!dataCaptcha?.id) {
+        return;
+      }
+
+      const { accessToken, refreshToken } = await authService.login({
+        username,
+        password,
+        verifyCode,
+        captchaId: dataCaptcha?.id,
+      });
+      ServiceBase.setToken(accessToken);
+
+      const [user, roles] = await Promise.all([
+        userService.getCurrentUser(accessToken),
+        authService.getCurrentRole(),
+      ]);
+      setUserToken({ accessToken, refreshToken });
+      if (!user) {
+        dispatch(resetAll());
+      } else {
+        dispatch(setUser(user));
+        dispatch(setPermission(roles ?? []));
+        navigatge(HOMEPAGE, { replace: true });
+      }
     } finally {
       setLoading(false);
     }
   };
+  if (loginState !== LoginStateEnum.LOGIN) return null;
+
   return (
     <>
       <div className="mb-4 text-2xl font-bold xl:text-3xl">{t('sys.login.signInFormTitle')}</div>
@@ -85,6 +128,22 @@ function LoginForm() {
         >
           <Input.Password type="password" placeholder={t('sys.login.password')} />
         </Form.Item>
+        <Form.Item name="verifyCode" rules={[{ required: true, message: '请输入密码！' }]}>
+          <Input
+            placeholder="验证码"
+            prefix={<SafetyOutlined />}
+            size="large"
+            maxLength={4}
+            suffix={
+              <img
+                src={dataCaptcha?.img}
+                onClick={handleGetCaptcha}
+                className="absolute right-0 top-0 h-full cursor-pointer"
+                alt="验证码"
+              />
+            }
+          />
+        </Form.Item>
         <Form.Item>
           <Row>
             <Col span={12}>
@@ -97,6 +156,7 @@ function LoginForm() {
             </Col>
           </Row>
         </Form.Item>
+
         <Form.Item>
           <Button type="primary" htmlType="submit" className="w-full" loading={loading}>
             {t('sys.login.loginButton')}

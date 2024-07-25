@@ -17,7 +17,7 @@ export default function AuthGuard({ children }: Props) {
     if (!accessToken) {
       router.replace('/login');
     }
-  }, [router, accessToken]);
+  }, [accessToken, router]);
 
   useEffect(() => {
     check();

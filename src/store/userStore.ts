@@ -13,7 +13,7 @@ import { StorageEnum } from '#/enum';
 
 const { VITE_APP_HOMEPAGE: HOMEPAGE } = import.meta.env;
 
-type UserStore = {
+export type UserStore = {
   userInfo: Partial<UserInfo>;
   userToken: UserToken;
   // 使用 actions 命名空间来存放所有的 action
@@ -46,23 +46,22 @@ const useUserStore = create<UserStore>((set) => ({
 
 export const useUserInfo = () => useUserStore((state) => state.userInfo);
 export const useUserToken = () => useUserStore((state) => state.userToken);
-export const useUserPermission = () => useUserStore((state) => state.userInfo.permissions);
+export const useUserPermission = () => useUserStore((state) => []);
 export const useUserActions = () => useUserStore((state) => state.actions);
 
 export const useSignIn = () => {
   const { t } = useTranslation();
   const navigatge = useNavigate();
   const { notification, message } = App.useApp();
-  const { setUserToken, setUserInfo } = useUserActions();
+  const { setUserToken } = useUserActions();
 
   const signInMutation = useMutation(userService.signin);
 
   const signIn = async (data: SignInReq) => {
     try {
       const res = await signInMutation.mutateAsync(data);
-      const { user, accessToken, refreshToken } = res;
+      const { accessToken, refreshToken } = res;
       setUserToken({ accessToken, refreshToken });
-      setUserInfo(user);
       navigatge(HOMEPAGE, { replace: true });
 
       notification.success({
@@ -76,8 +75,26 @@ export const useSignIn = () => {
         duration: 3,
       });
     }
+    return undefined;
   };
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   return useCallback(signIn, []);
+};
+
+export const useCaptcha = () => {
+  const signInMutation = useMutation(userService.captcha);
+
+  const captcha = async () => {
+    try {
+      const res = await signInMutation.mutateAsync({ width: 100, height: 50 });
+      return res;
+    } catch (err) {
+      //
+    }
+    return null;
+  };
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  return useCallback(captcha, []);
 };

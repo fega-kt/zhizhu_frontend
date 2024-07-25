@@ -1,0 +1,78 @@
+{
+  "parser": "@typescript-eslint/parser",
+  // "parserOptions": { "project": "./tsconfig.json" },
+  "settings": {
+    "import/extensions": [".ts", ".tsx"],
+    "import/parsers": { "@typescript-eslint/parser": [".ts", ".tsx"] },
+    "import/resolver": { "node": { "extensions": [".ts", ".tsx"] } },
+    "react": { "version": "detect" }
+  },
+  "plugins": ["@typescript-eslint"],
+  "extends": ["airbnb", "airbnb-typescript", "airbnb/hooks", "prettier"],
+  "rules": {
+    "@typescript-eslint/no-empty-interface": "off",
+    "@typescript-eslint/no-empty-function": "off",
+    "@typescript-eslint/ban-types": "off",
+    "no-empty-pattern": "off",
+    "no-underscore-dangle": "off",
+    "react/jsx-no-useless-fragment": "off",
+    "react/require-default-props": "off",
+    "react/function-component-definition": "off",
+    "react/no-access-state-in-setstate": "off",
+    "react/prop-types": "off",
+    "import/prefer-default-export": "off",
+    "react/destructuring-assignment": "off",
+    "no-use-before-define": "off",
+    "@typescript-eslint/no-use-before-define": [
+      "error",
+      {
+        "functions": false,
+        "classes": true,
+        "variables": true,
+        "typedefs": true
+      }
+    ],
+    "react/jsx-props-no-spreading": "off",
+    "no-restricted-globals": "warn",
+    "no-sparse-arrays": "off",
+    "import/no-cycle": "warn",
+    "no-empty": "off",
+    "default-case": "warn",
+    "curly": "warn",
+    "jsx-a11y/anchor-is-valid": "off",
+    "jsx-a11y/no-static-element-interactions": "off",
+    "jsx-a11y/click-events-have-key-events": "off",
+    "react/no-did-update-set-state": "warn",
+    "class-methods-use-this": "off",
+    "prefer-destructuring": "warn",
+    "no-script-url": "warn",
+    "global-require": "off",
+    "import/no-extraneous-dependencies": "off",
+    "no-control-regex": "off",
+    "padding-line-between-statements": [
+      "error",
+      {
+        "blankLine": "always",
+        "prev": "export",
+        "next": "export"
+      },
+      {
+        "blankLine": "never",
+        "prev": "import",
+        "next": "import"
+      },
+      {
+        "blankLine": "always",
+        "prev": "import",
+        "next": "export"
+      }
+    ],
+    "arrow-body-style": "off",
+    "jsx-a11y/no-noninteractive-element-interactions": "warn",
+    // Requires tsconfig.json
+    "@typescript-eslint/dot-notation": "off",
+    "@typescript-eslint/no-throw-literal": "off",
+    "@typescript-eslint/return-await": "off",
+    "@typescript-eslint/no-implied-eval": "off"
+  }
+}

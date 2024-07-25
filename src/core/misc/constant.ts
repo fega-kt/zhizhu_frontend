@@ -1,0 +1,7 @@
+export const DEFAULT_DATE_FORMAT = 'DD/MM/YYYY';
+
+export const DEFAULT_TIME_FORMAT = 'HH:mm:ss';
+
+export const DEFAULT_DATETIME_FORMAT = `${DEFAULT_DATE_FORMAT} ${DEFAULT_TIME_FORMAT}`;
+
+export const DEFAULT_NUMBER_NORMAL_FORMAT = '0,0';

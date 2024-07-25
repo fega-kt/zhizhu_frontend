@@ -13,7 +13,7 @@ export interface UserInfo {
   avatar?: string;
   role?: Role;
   status?: BasicStatus;
-  permissions?: Permission[];
+  // permissions?: Permission[];
 }
 
 export interface Organization {

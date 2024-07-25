@@ -63,7 +63,7 @@ export default function Nav(props: Props) {
       }
       setSelectedKeys([pathname]);
     }
-  }, [menuList,pathname, matches, collapsed, themeLayout]);
+  }, [menuList, pathname, matches, collapsed, themeLayout]);
 
   useEffect(() => {
     const menuRoutes = menuFilter(permissionRoutes);

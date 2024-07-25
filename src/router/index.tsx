@@ -20,6 +20,7 @@ const PAGE_NOT_FOUND_ROUTE: AppRouteObject = {
 
 export default function Router() {
   const permissionRoutes = usePermissionRoutes();
+  console.log({ permissionRoutes });
   const asyncRoutes: AppRouteObject = {
     path: '/',
     element: (
@@ -32,7 +33,7 @@ export default function Router() {
 
   const routes = [LoginRoute, asyncRoutes, ErrorRoutes, PAGE_NOT_FOUND_ROUTE];
 
-  const router = createHashRouter(routes as unknown as RouteObject[]);
+  const router = createHashRouter(routes as RouteObject[]);
 
   return <RouterProvider router={router} />;
 }

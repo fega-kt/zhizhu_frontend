@@ -1,10 +1,11 @@
 import { isEmpty } from 'ramda';
 import { Suspense, lazy, useMemo } from 'react';
+import { useSelector } from 'react-redux';
 import { Navigate, Outlet } from 'react-router-dom';
 
 import { Iconify } from '@/components/icon';
 import { CircleLoading } from '@/components/loading';
-import { useUserPermission } from '@/store/userStore';
+import { RootState } from '@/storeRedux';
 import ProTag from '@/theme/antd/components/tag';
 import { flattenTrees } from '@/utils/tree';
 
@@ -37,7 +38,7 @@ export function usePermissionRoutes() {
   //   return getRoutesFromModules();
   // }, []);
 
-  const permissions = useUserPermission();
+  const permissions = useSelector((state: RootState) => state.rootReducer.user.permission ?? []);
 
   return useMemo(() => {
     const flattenedPermissions = flattenTrees(permissions!);
